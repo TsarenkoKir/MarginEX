@@ -1,0 +1,184 @@
+.bids-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	margin: auto;
+}
+.bids-container-text h1 {
+	font-weight: 600;
+	font-size: 28px;
+	line-height: 42px;
+	color: #ffffff;
+	margin-bottom: 1rem;
+}
+.bids-container-card {
+	margin: 0 -5px;
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	width: 100%;
+}
+.bids-container-card:after {
+	content: '';
+	display: table;
+	clear: both;
+}
+.card-column {
+	width: 100%;
+	max-width: 320px;
+}
+.bids-card {
+	background: #2a2d3a;
+	border-radius: 20px;
+	padding: 11px 12px 19px 11px;
+	margin-inline: 10px;
+	margin-bottom: 20px;
+}
+.bids-card img {
+	border-radius: 20px;
+	width: 100%;
+	height: 300px;
+	object-fit: cover;
+}
+
+.bids-card-placeholder {
+	display: flex;
+	border-radius: 20px;
+	width: 100%;
+	height: 300px;
+	background: #42434b;
+	animation: pulseAnimation 1.5s ease-in-out infinite;
+}
+
+.bids-card-placeholder-text {
+	width: 100%;
+	height: 20px;
+	background: #42434b;
+	margin-top: 8px;
+	border-radius: 10px;
+	animation: pulseAnimation 1.5s ease-in-out infinite;
+}
+
+.bids-card-top p {
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 21px;
+	color: #ffffff;
+	margin-top: 15px;
+}
+.bids-card-bottom {
+	display: flex;
+	justify-content: space-between;
+}
+.bids-card-bottom p {
+	font-weight: 600;
+	font-size: 12px;
+	line-height: 18px;
+	/* text-align: right; */
+	color: #ffffff;
+}
+.bids-card-bottom p:last-child {
+	font-weight: normal;
+}
+.bids-card-bottom span {
+	font-weight: normal;
+}
+.load-more {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 2rem;
+}
+.load-more button {
+	background: transparent;
+	border: 1px solid var(--primary-color);
+	margin: 0 1rem;
+	color: var(--primary-color);
+	border-radius: 10px;
+	padding: 10px 100px;
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 21px;
+}
+
+@media screen and (max-width: 1800px) {
+	.bids-container-card {
+		grid-template-columns: repeat(5, 1fr);
+	}
+}
+
+@media screen and (max-width: 1300px) {
+	.bids-container-card {
+		grid-template-columns: repeat(4, 1fr);
+	}
+	.bids-card img {
+		width: 100%;
+		height: 200px;
+	}
+	.bids-card-placeholder {
+		width: 100%;
+		height: 200px;
+	}
+}
+
+@media screen and (max-width: 900px) {
+	.bids-container-card {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.bids-card img {
+		width: 100%;
+		height: 200px;
+	}
+	.bids-card-placeholder {
+		width: 100%;
+		height: 200px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.bids-container-card {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media screen and (max-width: 550px) {
+	.section__padding {
+		padding: 2rem 14px !important;
+	}
+	.bids-card {
+		margin-bottom: 10px;
+		margin-inline: 5px;
+	}
+	.bids-card-top p {
+		font-size: 12px;
+		line-height: 18px;
+		margin-top: 5px;
+	}
+	.bids-card-bottom p {
+		font-size: 10px;
+		line-height: 15px;
+	}
+}
+
+@media screen and (max-width: 400px) {
+	.bids-container-card {
+		grid-template-columns: repeat(1, 1fr);
+	}
+	.bids-card img {
+		width: 100%;
+		height: 150px;
+	}
+	.bids-card-placeholder {
+		width: 100%;
+		height: 150px;
+	}
+}
+
+@keyframes pulseAnimation {
+	0%, 100% {
+			background: #42434b; /* Original color */
+	}
+	50% {
+			background: #56575c; /* Slightly lighter color */
+	}
+}

@@ -1,18 +1,29 @@
-import './create.css'
-import { useState } from 'react'
-import { uploadFileToIPFS, uploadJSONToIPFS } from '../../utils/pinata'
-import MarketplaceJSON from '../../Marketplace.json'
+import { useEffect, useState } from 'react'
 import { quais } from 'quais'
+import { pollFor } from 'quais-polling'
+import { uploadFileToIPFS, uploadJSONToIPFS } from '../../utils/pinata'
 import { ThreeCircles } from 'react-loader-spinner'
+import { createNFT } from '../../utils/marketplace'
+import { toast } from 'react-toastify'
+import { ToastMessage } from '../../components/toast/ToastMessage'
+import { toastConfig, createBlockExplorerUrl } from '../../utils/helpers'
+import './create.css'
 
-const Create = () => {
+const Create = ({ provider, fetchAllNFTs, isCyprus2 }) => {
 	const [formParams, updateFormParams] = useState({ name: '', description: '', price: '' })
 	const [fileURL, setFileURL] = useState(null)
-  const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(false)
 
-  //This function uploads the NFT image to IPFS
+	useEffect(() => {
+		if (!isCyprus2) {
+			updateFormParams({ name: '', description: '', price: '' })
+			setFileURL(null)
+		}
+	}, [isCyprus2])
+
+	//This function uploads the NFT image to IPFS
 	async function OnChangeFile(e) {
-    setLoading(true);
+		setLoading(true)
 		var file = e.target.files[0]
 		//check for file extension
 		try {
@@ -23,10 +34,9 @@ const Create = () => {
 			}
 		} catch (e) {
 			console.log('Error during file upload', e)
+		} finally {
+			setLoading(false)
 		}
-    finally {
-      setLoading(false);
-    }
 	}
 
 	//This function uploads the metadata to IPFS
@@ -43,7 +53,7 @@ const Create = () => {
 			price,
 			image: fileURL,
 		}
-    
+
 		try {
 			//upload the metadata JSON to IPFS
 			const response = await uploadJSONToIPFS(nftJSON)
@@ -57,142 +67,152 @@ const Create = () => {
 
 	async function listNFT(e) {
 		e.preventDefault()
-    
-    setLoading(true);
+
+		setLoading(true)
 		//Upload data to IPFS
 		try {
 			const metadataURL = await uploadMetadataToIPFS()
 			if (metadataURL === -1) return
 
-			//After adding your Hardhat network to your metamask, this code will get providers and signers
-			const provider = new quais.providers.Web3Provider(window.ethereum)
-			const signer = provider.getSigner()
-
-			//Pull the deployed contract instance
-			let contract = new quais.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer)
-
-			//massage the params to be sent to the create NFT request
 			const price = quais.utils.parseUnits(formParams.price, 'ether')
-			let listingPrice = await contract.getListPrice()
-			listingPrice = listingPrice.toString()
+			const response = await createNFT(provider.web3Provider, metadataURL, price)
+			if (response.status === 'success') {
+				const transaction = await pollFor(provider.rpcProvider, 'getTransactionReceipt', [response.data], 1.5, 1)
+				if (transaction.logs.length !== 0) {
+					toast(
+						<ToastMessage
+							title='Mint Successful'
+							link={{ href: createBlockExplorerUrl('transaction', transaction.transactionHash), text: 'View on Explorer' }}
+						/>,
+						toastConfig
+					)
+					fetchAllNFTs(provider.rpcProvider)
+				} else {
+					toast(
+						<ToastMessage
+							title='Mint Failed'
+							text='Transaction reverted'
+							link={{ href: createBlockExplorerUrl('transaction', transaction.transactionHash), text: 'View on Explorer' }}
+						/>,
+						toastConfig
+					)
+				}
+				updateFormParams({ name: '', description: '', price: '' })
+				setLoading(false)
+			} else {
+				toast(
+					<ToastMessage
+						title='Purchase Failed'
+						text={response.data.message}
+					/>,
+					toastConfig
+				)
+				setLoading(false)
+			}
 
-			//actually create the NFT
-			let transaction = await contract.createToken(metadataURL, price, { value: listingPrice, gasLimit: quais.utils.hexlify(350000) })
-			
-      await Promise.any([delayedTransaction(transaction), delayedAsyncFunction()])
-      //await transaction.wait()
-
-			updateFormParams({ name: '', description: '', price: '' })
-			window.location.replace('/')
+			// window.location.replace('/')
 		} catch (e) {
 			alert('Upload error' + e)
+		} finally {
+			setLoading(false)
 		}
-    finally {
-      setLoading(false);
-    }
 	}
 
-  async function delayedTransaction(transaction) {
-    return await new Promise(async resolve => {
-        await transaction.wait()
-        resolve(); // Resolve the promise when the asynchronous operation is complete
-    });
-  }
+	return (
+		<div className='create section__padding'>
+			<div className='create-container'>
+				<h1>Create new NFT</h1>
+				<form
+					className='writeForm'
+					autoComplete='off'
+				>
+					<div className='formGroup'>
+						<label>Name</label>
+						<input
+							type='text'
+							placeholder='NFT Name'
+							autoFocus={true}
+							id='name'
+							onChange={(e) => updateFormParams({ ...formParams, name: e.target.value })}
+							value={formParams.name}
+							disabled={!isCyprus2}
+							className='input-handler'
+						/>
+					</div>
+					<div className='formGroup'>
+						<label>Description</label>
+						<textarea
+							type='text'
+							rows={4}
+							placeholder='Decription of your NFT'
+							id='description'
+							value={formParams.description}
+							onChange={(e) => updateFormParams({ ...formParams, description: e.target.value })}
+							disabled={!isCyprus2}
+							className='input-handler'
+						></textarea>
+					</div>
+					<div className='formGroup'>
+						<label>Price</label>
+						<div className='twoForm'>
+							<input
+								type='number'
+								placeholder='Min 0.01 QUAI'
+								step='0.01'
+								value={formParams.price}
+								onChange={(e) => updateFormParams({ ...formParams, price: e.target.value })}
+								disabled={!isCyprus2}
+								className='input-handler'
+							/>
+						</div>
+					</div>
+					<div className='formGroup'>
+						<label>Category</label>
+						<select
+							disabled={!isCyprus2}
+							className='input-handler'
+						>
+							<option>Meme</option>
+							<option>Art</option>
+							<option>Photography</option>
+							<option>Sport</option>
+							<option>Crypto</option>
+							<option>Other</option>
+						</select>
+					</div>
+					<div className='formGroup'>
+						<label>Upload</label>
+						<input
+							type='file'
+							className='custom-file-input input-handler'
+							onChange={OnChangeFile}
+							disabled={!isCyprus2}
+						/>
+					</div>
+					{!loading && (
+						<button
+							className='writeButton primary-btn'
+							onClick={listNFT}
+							id='list-button'
+							disabled={!isCyprus2}
+						>
+							List My NFT
+						</button>
+					)}
+					<ThreeCircles
+						visible={loading}
+						height='90'
+						width='90'
+						color='#EB1484'
+						justify-content='center'
+						ariaLabel='three-circles-loading'
+						wrapperStyle={{ justifyContent: 'center' }}
+						wrapperClass=''
+					/>
+				</form>
+			</div>
+		</div>
+	)
+}
 
-  function delayedAsyncFunction() {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(); // Resolve the promise when the asynchronous operation is complete
-      }, 3000);
-    });
-  }
-
-  return (
-    <div className='create section__padding'>
-      <div className="create-container">
-        <h1>Create new NFT</h1>
-        
-        <form className='writeForm' autoComplete='off'>
-          
-          
-          <div className="formGroup">
-            <label>Name</label>
-            <input 
-            type="text" 
-            placeholder='NFT Name' 
-            autoFocus={true} 
-            id='name'
-            onChange={(e) => updateFormParams({ ...formParams, name: e.target.value })}
-            value={formParams.name}
-            />
-          </div>
-          <div className="formGroup">
-            <label>Description</label>
-            <textarea 
-            type="text" 
-            rows={4}
-            placeholder='Decription of your NFT' 
-            id='description'
-            value={formParams.description}
-            onChange={(e) => updateFormParams({ ...formParams, description: e.target.value })}
-          ></textarea>
-          </div>
-          <div className="formGroup">
-            <label>Price</label>
-            <div className="twoForm">
-              <input 
-              type='number'
-							placeholder='Min 0.01 QUAI'
-							step='0.01'
-							value={formParams.price}
-							onChange={(e) => updateFormParams({ ...formParams, price: e.target.value })}
-              />
-            </div>
-          </div>
-          <div className="formGroup">
-            <label>Category</label>
-            <select >
-               <option>Art</option>
-               <option>Photography</option>
-               <option>MEME</option>
-               <option>Sport</option>
-               <option>Crypto</option>
-               <option>Other</option>
-            </select>
-          </div>
-
-          <p className='upload-file'>Upload File (Coming Soon)</p>
-          <div className="upload-img-show">
-              <h3>JPG, PNG, GIF, SVG, WEBM, MP3, MP4. Max 100mb.</h3>
-              {/* <img src={Image} alt="banner" /> */}
-              <p>Drag and Drop File</p>
-          </div>
-          <div className="formGroup">
-            <label>Upload</label>
-            <input 
-            type="file" 
-            className='custom-file-input'
-            onChange={OnChangeFile}
-          />
-          </div>
-          {!loading && <button className='writeButton' onClick={listNFT} id='list-button'>List My NFT</button>}
-          <ThreeCircles
-                visible={loading}
-                height="90"
-                width="90"
-                color="#EB1484"
-                justify-content="center"
-                ariaLabel="three-circles-loading"
-                wrapperStyle={{justifyContent: "center"}}
-                wrapperClass=""
-                />
-        
-        </form>
-        
-      </div>
-    </div>
-   
-  )
-};
-
-export default Create;
+export default Create

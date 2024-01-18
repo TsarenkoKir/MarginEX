@@ -1,55 +1,132 @@
 import React from 'react'
 import './footer.css'
-import nftlogo from '../../assets/logo.png'
-import { AiOutlineInstagram,AiOutlineTwitter, } from "react-icons/ai";
-import { RiDiscordFill } from "react-icons/ri";
-import { FaTelegramPlane } from "react-icons/fa";
-const Footer = () => {
-  return (
-    <div className='footer section__padding'>
-      <div className="footer-links">
-        <div className="footer-links_logo">
-        <div>
-          <img src={nftlogo} alt="logo" />
-          <p>Thanks, Jud!</p>
-        </div>
-        <div>
-          <h3>Get the lastes Updates</h3>
-        </div>
-        <div>
-          <input type="text" placeholder='Your Email' />
-          <button>Email Me!</button>
-        </div>
-        </div>
-        <div className="footer-links_div">
-          <h4>MarginEX</h4>
-          <p><a href="https://twitter.com/margin_exchange" target="_blank" rel="noopener noreferrer" className="footer-link">Twitter</a></p>
-          <p>Discord (soon)</p>
-          <p>Docs (Soon)</p>
-          <p><a href="https://t.me/Kyryllo22" target="_blank" rel="noopener noreferrer" className="footer-link">Contuct Us</a></p>
-        </div>
-        <div className="footer-links_div">
-          <h4>Quai Network</h4>
-          <p><a href="https://discord.gg/quai" target="_blank" rel="noopener noreferrer" className="footer-link">Discord</a></p>
-          <p><a href="https://twitter.com/QuaiNetwork" target="_blank" rel="noopener noreferrer" className="footer-link">Twitter</a></p>
-          <p><a href="https://qu.ai/docs/category/tutorials/" target="_blank" rel="noopener noreferrer" className="footer-link">Build on Quai</a></p>
-          <p><a href="https://qu.ai/docs/category/miner/" target="_blank" rel="noopener noreferrer" className="footer-link">Run Miner</a></p>
-        </div>
-      </div>
-      <div className="footer-copyright">
-        <div>
-        <p> © {(new Date().getFullYear())} MarginEX & Quai, Inc. All Rights Reserved</p>
-        </div>
-        <div>
-          <AiOutlineInstagram size={25} color='white' className='footer-icon' />
-          <AiOutlineTwitter size={25} color='white' className='footer-icon'/>
-          <RiDiscordFill size={25} color='white' className='footer-icon'/>
-          <FaTelegramPlane size={25} color='white'  className='footer-icon' />
-        </div>
+import { AiOutlineTwitter } from 'react-icons/ai'
+import { RiDiscordFill } from 'react-icons/ri'
+import { FaGithub } from 'react-icons/fa'
+import { FaTelegramPlane } from 'react-icons/fa'
 
-      </div>
-    </div>
-  )
+const marginExLinks = [
+	{ title: 'Twitter', href: 'https://twitter.com/margin_exchange' },
+	{ title: 'Discord [Coming Soon!]', href: '' },
+	{ title: 'Docs [Coming Soon!]', href: '' },
+	{ title: 'Contact', href: 'https://t.me/Kyryllo22' },
+]
+
+const quaiLinks = [
+	{ title: 'Discord', href: 'https://discord.gg/quai' },
+	{ title: 'Twitter', href: 'https://twitter.com/QuaiNetwork' },
+	{ title: 'Develop on Quai', href: 'https://qu.ai/docs/category/tutorials/' },
+	{ title: 'Mine Quai', href: 'https://qu.ai/docs/category/miner/' },
+]
+
+const socialLinks = [
+	{
+		title: 'Twitter',
+		href: 'https://twitter.com/margin_exchange',
+		icon: (
+			<AiOutlineTwitter
+				size={25}
+				color='white'
+				className='footer-icon'
+			/>
+		),
+	},
+	{
+		title: 'Discord',
+		href: 'https://discord.gg/quai',
+		icon: (
+			<RiDiscordFill
+				size={25}
+				color='white'
+				className='footer-icon'
+			/>
+		),
+	},
+	{
+		title: 'Telegram',
+		href: 'https://t.me/Kyryllo22',
+		icon: (
+			<FaTelegramPlane
+				size={25}
+				color='white'
+				className='footer-icon'
+			/>
+		),
+	},
+	{
+		title: 'Github',
+		href: 'https://github.com/TsarenkoKir/NFT-Marketplace',
+		icon: (
+			<FaGithub
+				size={25}
+				color='white'
+				className='footer-icon'
+			/>
+		),
+	},
+]
+
+const Footer = () => {
+	return (
+		<div className='footer'>
+			<div className='footer-links'>
+				<div className='footer-links-email'>
+					<h4>Want more from MarginEX?</h4>
+					<p>Get the lastest updates on MarginEX and Quai NFTs delivered right to your inbox.</p>
+					<input
+						type='text'
+						placeholder='Your Email'
+					/>
+					<button>Email Me!</button>
+				</div>
+				<div className='footer-links-container'>
+					<div className='footer-links-div'>
+						<h4>MarginEX</h4>
+						{marginExLinks.map((link, index) => (
+							<a
+								href={link.href}
+								target='_blank'
+								rel='noopener noreferrer'
+								className='footer-link'
+								key={index}
+							>
+								{link.title}
+							</a>
+						))}
+					</div>
+					<div className='footer-links-div'>
+						<h4>Quai Network</h4>
+						{quaiLinks.map((link, index) => (
+							<a
+								href={link.href}
+								target='_blank'
+								rel='noopener noreferrer'
+								className='footer-link'
+								key={index}
+							>
+								{link.title}
+							</a>
+						))}
+					</div>
+				</div>
+			</div>
+			<div className='footer-copyright'>
+				<div>
+					<p>© MarginEX {new Date().getFullYear()}. All Rights Reserved.</p>
+				</div>
+				<div className='footer-icon-container'>
+					{socialLinks.map((link, index) => (
+						<a
+							href={link.href}
+							key={index}
+						>
+							{link.icon}
+						</a>
+					))}
+				</div>
+			</div>
+		</div>
+	)
 }
 
 export default Footer
