@@ -1,0 +1,9 @@
+.toast-message-container {
+	display: flex;
+	flex-direction: column;
+	gap: 0.1rem;
+}
+
+.toast-message-container h4 {
+	margin-bottom: 0.2rem;
+}

@@ -1,15 +1,17 @@
-import React from 'react';
-import {NFTs, Header, } from '../../components'
+import React from 'react'
+import { NFTs, Header } from '../../components'
 
+const Home = ({ allNFTs, setUser, provider }) => {
+	return (
+		<div>
+			<Header />
+			<NFTs
+				setUser={setUser}
+				provider={provider}
+				allNFTs={allNFTs}
+			/>
+		</div>
+	)
+}
 
-const Home = () => {
-
-  return <div>
-   <Header />
-   
-   <NFTs title="NFTs"  />
-  </div>;
-  
-};
-
-export default Home;
+export default Home

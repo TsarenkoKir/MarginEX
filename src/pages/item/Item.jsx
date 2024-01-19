@@ -1,87 +1,154 @@
-import React, {useState} from 'react';
-import { useLocation } from 'react-router-dom';
-import './item.css'
-import creator from '../../assets/seller2.png'
-import { quais } from 'quais'
-import MarketplaceJSON from '../../Marketplace.json'
+import { useEffect, useState } from 'react'
 import { ThreeCircles } from 'react-loader-spinner'
+import { useLocation } from 'react-router-dom'
+import { buyNFT } from '../../utils/marketplace'
+import { toastConfig, createBlockExplorerUrl } from '../../utils/helpers'
+import { toast } from 'react-toastify'
+import { ToastMessage } from '../../components/toast/ToastMessage'
+import { pollFor } from 'quais-polling'
+import './item.css'
 
-const Item = () => {
+const Item = ({ provider, user, fetchAllNFTs, isCyprus2 }) => {
+	const [loading, setLoading] = useState(false) // loading state for buy transaction
+	const [isUserOwner, setIsUserOwner] = useState(false) // state to check if user is owner of NFT, if true disables buy functionality
+	const location = useLocation()
+	const receivedData = location.state
+	const nftItem = receivedData.data
 
-  const location = useLocation();
-  const receivedData = location.state;
-  const nftItem = receivedData.data;
-  const [loading, setLoading] = useState(false);
-
-  async function buyNFT(tokenId, price) {
-    setLoading(true);
-		try {
-			//After adding your Hardhat network to your metamask, this code will get providers and signers
-			const provider = new quais.providers.Web3Provider(window.ethereum)
-			const signer = provider.getSigner()
-
-			//Pull the deployed contract instance
-			let contract = new quais.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, signer)
-			const salePrice = quais.utils.parseUnits(price, 'ether')
-
-			//run the executeSale function
-			let transaction = await contract.executeSale(tokenId, { value: salePrice, gasLimit: quais.utils.hexlify(150000) })
-			await transaction.wait()
-			alert('You successfully bought the NFT!')
-		} catch (e) {
-			alert('Upload Error' + e)
+	/*
+  On page load, check if user is owner of NFT, render different UI/buttons based on this
+  - Re-runs check if user, shard, or nftItem.seller changes
+  */
+	useEffect(() => {
+		if (user && isCyprus2) {
+			if (user.addr.toLowerCase() === nftItem.seller.toLowerCase()) {
+				setIsUserOwner(true)
+			}
 		}
-    finally {
-      setLoading(false);
-    }
+	}, [user, isCyprus2, nftItem.seller])
+
+	/*
+  Function to purchase NFT
+  - Calls buyNFT function from marketplace.js, passes selected NFT data
+  - If successful, polls for transaction receipt, if successful, fetches all NFTs again
+  - If unsuccessful, displays error message
+  - Handles loading state for animation
+  */
+	async function purchaseNFT() {
+		setLoading(true)
+		try {
+			const response = await buyNFT(provider.web3Provider, nftItem.tokenId, nftItem.price)
+			if (response.status === 'success') {
+				const transaction = await pollFor(provider.rpcProvider, 'getTransactionReceipt', [response.data], 1.5, 1)
+				if (transaction.logs.length !== 0) {
+					toast(
+						<ToastMessage
+							title='Mint Successful'
+							link={{ href: createBlockExplorerUrl('transaction', transaction.transactionHash), text: 'View on Explorer' }}
+						/>,
+						toastConfig
+					)
+					fetchAllNFTs(provider.rpcProvider)
+				} else {
+					toast(
+						<ToastMessage
+							title='Mint Failed'
+							text='Transaction reverted'
+							link={{ href: createBlockExplorerUrl('transaction', transaction.transactionHash), text: 'View on Explorer' }}
+						/>,
+						toastConfig
+					)
+				}
+				setLoading(false)
+			} else {
+				toast(
+					<ToastMessage
+						title='Purchase Failed'
+						text={response.data.message}
+					/>,
+					toastConfig
+				)
+				setLoading(false)
+			}
+		} catch (e) {
+			alert(e)
+		} finally {
+			setLoading(false)
+		}
 	}
+	return (
+		<div className='item section__padding'>
+			<div className='item-image-container'>
+				<img
+					src={nftItem.image}
+					alt='item'
+				/>
+			</div>
+			<div className='item-content'>
+				<div className='item-content-title'>
+					<h1>{nftItem.name}</h1>
+					<h2 className='item-title'>{nftItem.price} QUAI</h2>
+				</div>
+				<div className='item-content-creator'>
+					<p className='item-title'>Contract Address</p>
+					<a
+						href={createBlockExplorerUrl('address', nftItem.owner)}
+						target='_blank'
+						rel='noreferrer'
+						className='link'
+					>
+						{nftItem.owner}
+					</a>
+				</div>
+				<div className='item-content-creator'>
+					<p className='item-title'>Owner</p>
+					<a
+						href={createBlockExplorerUrl('address', nftItem.seller)}
+						target='_blank'
+						rel='noreferrer'
+						className='link'
+					>
+						{isUserOwner ? 'Me' : nftItem.seller}
+					</a>
+				</div>
+				<div className='item-content-creator'>
+					<p className='item-title'>Description</p>
+					{nftItem.description}
+				</div>
+				<div className='item-content-buy'>
+					{!loading && (
+						<>
+							<button
+								onClick={() => purchaseNFT()}
+								className='primary-btn'
+								disabled={isUserOwner || !isCyprus2}
+							>
+								Buy
+							</button>
 
+							<button
+								className='secondary-btn'
+								disabled={!isCyprus2}
+							>
+								Make Offer (Coming Soon)
+							</button>
+						</>
+					)}
 
-  return( 
-      <div className='item section__padding'>
-        <div className="item-image">
-          <img src={nftItem.image} alt="item" />
-        </div>
-          <div className="item-content">
-            <div className="item-content-title">
-              <h1>{nftItem.name}</h1>
-              <p><span>{nftItem.price} QUAI</span> - available</p>
-            </div>
-            <div className="item-content-creator">
-              <div><p>Owner</p></div>
-              <div>
-                <p>{nftItem.owner} </p>
-              </div>
-            </div>
-            <div className="item-content-creator">
-              <div><p>Seller</p></div>
-              <div>
-                <img src={creator} alt="creator" />
-                <p>{nftItem.seller} </p>
-              </div>
-            </div>
-            <div className="item-content-detail">
-              <p>{nftItem.description}</p>
-            </div>
-            <div className="item-content-buy">
-              {!loading && <button onClick={() => buyNFT(nftItem.tokenId, nftItem.price)} className="primary-btn">Buy</button>}
-              {!loading && <button className="secondary-btn">Make Offer (Coming Soon)</button>}
-              
-              <ThreeCircles
-                visible={loading}
-                height="90"
-                width="90"
-                justify-content="center"
-                color="#EB1484"
-                ariaLabel="three-circles-loading"
-                wrapperStyle={{justifyContent: "center"}}
-                wrapperClass=""
-                />
-              
-            </div>
-          </div>
-      </div>
-  )
-};
+					<ThreeCircles
+						visible={loading}
+						height='90'
+						width='90'
+						justify-content='center'
+						color='#EB1484'
+						ariaLabel='three-circles-loading'
+						wrapperStyle={{ justifyContent: 'center' }}
+						wrapperClass=''
+					/>
+				</div>
+			</div>
+		</div>
+	)
+}
 
-export default Item;
+export default Item
