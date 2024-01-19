@@ -9,6 +9,7 @@ export const GetIpfsUrlFromPinata = (pinataUrl) => {
 	return IPFSUrl
 }
 
+// helper to create block explorer urls, takes in a type (transaction, address, block) and input (hash, address, block number)
 export const createBlockExplorerUrl = (type, input) => {
 	let url
 	const baseURL = 'https://cyprus2.colosseum.quaiscan.io/'
@@ -29,6 +30,7 @@ export const createBlockExplorerUrl = (type, input) => {
 	return url
 }
 
+// basic config for toast notifications
 export const toastConfig = {
 	position: 'top-center',
 	autoClose: 5000,
@@ -40,6 +42,7 @@ export const toastConfig = {
 	theme: 'dark',
 }
 
+// helper to get plain text shard names from shard ids
 export const getShardNameFromId = (shardId) => {
 	switch (shardId) {
 		case 'zone-0-0':
@@ -65,6 +68,7 @@ export const getShardNameFromId = (shardId) => {
 	}
 }
 
+// filter for user NFTs from allNFTs
 export const filterNFTsByOwner = (NFTs, owner) => {
 	return NFTs.filter((NFT) => NFT.seller.toLowerCase() === owner)
 }

@@ -14,6 +14,11 @@ const Create = ({ provider, fetchAllNFTs, isCyprus2 }) => {
 	const [fileURL, setFileURL] = useState(null)
 	const [loading, setLoading] = useState(false)
 
+	/*
+  On page load, clear all form data
+  - Re-runs if shard changes (proxy for if user changes)
+  - Prevents user from creating NFTs on wrong shard
+  */
 	useEffect(() => {
 		if (!isCyprus2) {
 			updateFormParams({ name: '', description: '', price: '' })
@@ -21,13 +26,11 @@ const Create = ({ provider, fetchAllNFTs, isCyprus2 }) => {
 		}
 	}, [isCyprus2])
 
-	//This function uploads the NFT image to IPFS
+	// Function to upload file to IPFS
 	async function OnChangeFile(e) {
 		setLoading(true)
 		var file = e.target.files[0]
-		//check for file extension
 		try {
-			//upload the file to IPFS
 			const response = await uploadFileToIPFS(file)
 			if (response.success === true) {
 				setFileURL(response.pinataURL)
@@ -39,23 +42,19 @@ const Create = ({ provider, fetchAllNFTs, isCyprus2 }) => {
 		}
 	}
 
-	//This function uploads the metadata to IPFS
+	// Function to upload metadata to IPFS
 	async function uploadMetadataToIPFS() {
 		const { name, description, price } = formParams
-		//Make sure that none of the fields are empty
 		if (!name || !description || !price || !fileURL) {
 			return -1
 		}
-
 		const nftJSON = {
 			name,
 			description,
 			price,
 			image: fileURL,
 		}
-
 		try {
-			//upload the metadata JSON to IPFS
 			const response = await uploadJSONToIPFS(nftJSON)
 			if (response.success === true) {
 				return response.pinataURL
@@ -65,15 +64,19 @@ const Create = ({ provider, fetchAllNFTs, isCyprus2 }) => {
 		}
 	}
 
+	/*
+  Function to create NFT
+  - Calls createNFT function from marketplace.js, passes user defined NFT data
+  - If successful, polls for transaction receipt, if successful, fetches all NFTs again
+  - If unsuccessful, displays error message
+  - Handles loading state for animation
+  */
 	async function listNFT(e) {
 		e.preventDefault()
-
 		setLoading(true)
-		//Upload data to IPFS
 		try {
 			const metadataURL = await uploadMetadataToIPFS()
 			if (metadataURL === -1) return
-
 			const price = quais.utils.parseUnits(formParams.price, 'ether')
 			const response = await createNFT(provider.web3Provider, metadataURL, price)
 			if (response.status === 'success') {
@@ -109,8 +112,6 @@ const Create = ({ provider, fetchAllNFTs, isCyprus2 }) => {
 				)
 				setLoading(false)
 			}
-
-			// window.location.replace('/')
 		} catch (e) {
 			alert('Upload error' + e)
 		} finally {

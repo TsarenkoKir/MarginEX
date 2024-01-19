@@ -5,6 +5,10 @@ import { shortenAddress } from '../../utils/helpers'
 import NFTTileLoading from '../nftTile/NFTTileLoading'
 
 const Profile = ({ user, userNFTs, isCyprus2 }) => {
+	// Displays filtered NFTs based on user address
+	// Displays user address if connected
+	// Displays nothing if not connected or connected to the wrong shards
+	// Displays loading if userNFTs have not been fetched yet
 	return (
 		<div className='profile'>
 			<div className='profile-top section__padding'>

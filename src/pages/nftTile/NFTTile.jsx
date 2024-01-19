@@ -15,8 +15,7 @@ function NFTTile(data) {
 							src={item.image}
 							alt=''
 						/>
-
-						<p className='bids-title'>{item.name}</p>
+						<p>{item.name}</p>
 					</div>
 					<div className='bids-card-bottom'>
 						<p>{item.price} QUAI</p>

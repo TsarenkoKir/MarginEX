@@ -2,14 +2,14 @@
 	display: flex;
 	padding: 0 6rem;
 }
-.item-image {
+.item-image-container {
 	display: flex;
 	border-right: 1px solid rgba(165, 165, 165, 0.1);
 	width: 50%;
 	justify-content: center;
 	align-items: center;
 }
-.item-image img {
+.item-image-container img {
 	border-radius: 40px;
 	padding: 25px;
 	max-height: 500px;
@@ -22,37 +22,20 @@
 	width: 50%;
 	padding: 30px 3rem;
 }
-
 .item-title {
 	color: #bdbdbd;
 }
-
 .link:hover {
 	color: var(--primary-color);
 }
-
 .item-content-title h1 {
 	font-weight: 600;
 	font-size: 28px;
 	line-height: 42px;
 	color: #ffffff;
 }
-.item-content-title p {
-	font-weight: normal;
-	font-size: 14px;
-	line-height: 21px;
-	color: #ffffff;
-}
-.item-content-title span {
-	font-weight: 600;
-}
 .item-content-creator {
 	margin-top: 30px;
-}
-.item-content-info {
-	font-size: 12px;
-	line-height: 18px;
-	color: #ffffff;
 }
 .item-content-creator div {
 	display: flex;
@@ -65,13 +48,6 @@
 	line-height: 21px;
 	color: #ffffff;
 }
-.item-content-creator img {
-	border-radius: 50%;
-	margin-right: 10px;
-	width: 50px;
-	height: 50px;
-}
-
 .item-content-buy {
 	display: flex;
 	flex-direction: column;
@@ -82,7 +58,6 @@
 	margin-top: 30px;
 	width: 100%;
 }
-
 .item-content-buy .primary-btn {
 	background: var(--primary-btn);
 	border-radius: 10px;
@@ -104,27 +79,11 @@
 	font-weight: 600;
 	color: var(--primary-color);
 }
-.item-content-action {
-	display: flex;
-	position: absolute;
-	right: 0;
-}
-.item-content-action p {
-	cursor: pointer;
-	font-size: 18px;
-	color: white;
-	background: var(--primary-btn);
-	margin-inline: 10px;
-	border-radius: 5px;
-	padding: 5px 5px 0px 5px;
-}
+
+/* Media Queries */
 @media screen and (max-width: 1050px) {
 	.item-content {
 		padding: 0 2rem;
-	}
-
-	.item-content-detail p {
-		width: 100%;
 	}
 }
 
@@ -155,13 +114,7 @@
 		font-size: 16px;
 		line-height: 24px;
 	}
-	.item-content__people {
-		flex-direction: column;
-	}
-	.item-content__people p {
-		margin: 0;
-	}
-	.item-content__input input,
+	input,
 	.item-content__input button {
 		font-size: 16px;
 		line-height: 24px;

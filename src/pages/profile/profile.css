@@ -1,6 +1,5 @@
 .profile {
 	padding: 0;
-	/* padding-bottom: 6rem; */
 }
 .profile-top {
 	display: flex;
@@ -17,10 +16,6 @@
 	justify-content: center;
 	padding: 30px;
 	border-radius: 25px;
-}
-
-.profile-text {
-	padding-top: 20px;
 }
 .profile-pic {
 	display: flex;
@@ -41,8 +36,8 @@
 	line-height: 42px;
 	text-align: center;
 	color: #ffffff;
+	padding-top: 20px;
 }
-
 .profile-container {
 	display: flex;
 	flex-direction: column;
@@ -64,6 +59,7 @@
 	width: 100%;
 }
 
+/* Media Queries */
 @media screen and (max-width: 1800px) {
 	.profile-container-card {
 		grid-template-columns: repeat(5, 1fr);

@@ -1,60 +1,38 @@
 import { useState, useEffect } from 'react'
+import { ToastContainer, toast } from 'react-toastify'
+import { Routes, Route } from 'react-router-dom'
 import { quais } from 'quais'
 import { Navbar, Footer } from './components'
 import Home from './pages/home/Home'
 import Item from './pages/item/Item'
 import Create from './pages/create/Create'
 import Profile from './pages/profile/Profile'
-import { Routes, Route } from 'react-router-dom'
+import { ToastMessage } from './components/toast/ToastMessage'
+import { filterNFTsByOwner, getShardNameFromId, toastConfig } from './utils/helpers'
 import { getAccounts } from './utils/pelagus'
 import { getAllNFTs } from './utils/marketplace'
-import { filterNFTsByOwner, getShardNameFromId, toastConfig } from './utils/helpers'
-import { ToastContainer, toast } from 'react-toastify'
-import { ToastMessage } from './components/toast/ToastMessage'
 import 'react-toastify/dist/ReactToastify.css'
 import './App.css'
 
 function App() {
+	const [user, setUser] = useState() // user: {addr: '0x...', shard: 'zone-0-1'}, handles connection status and user account
+	const [allNFTs, setAllNFTs] = useState() // allNFTs: [{ NFT1 }, { NFT2 }, { NFT3 }], state array of all NFTs
+	const [userNFTs, setUserNFTs] = useState() // userNFTs: [{ NFT1 }, { NFT2 }, { NFT3 }], state array of user NFTs filtered from allNFTs
+	const [isCyprus2, setIsCyprus2] = useState(false) // isCyprus2: true/false, handles connection status to Cyprus 2
 	const [provider, setProvider] = useState({
 		rpcProvider: new quais.providers.JsonRpcProvider('https://rpc.cyprus2.colosseum.quaiscan.io'),
 		web3Provider: null,
-	})
-	const [user, setUser] = useState()
-	const [allNFTs, setAllNFTs] = useState()
-	const [userNFTs, setUserNFTs] = useState()
-	const [isCyprus2, setIsCyprus2] = useState(false)
+	}) // provider: {rpcProvider, web3Provider}, 2 providers, rpc provider for general data pulls, web3 provider for user actions
 
-	const fetchAllNFTs = async (provider) => {
-		await getAllNFTs(provider)
-			.then((NFTs) => {
-				setAllNFTs(NFTs.reverse())
-			})
-			.catch((err) => {
-				console.log('Error getting NFTs', err)
-			})
-	}
-
-	const fetchAccounts = async (provider) => {
-		await getAccounts(provider)
-			.then((account) => {
-				if (account !== undefined) {
-					if (account.shard === 'zone-0-1') {
-						setIsCyprus2(true)
-					} else {
-						setIsCyprus2(false)
-					}
-					setUser(account)
-				} else {
-					setUser()
-				}
-			})
-			.catch((err) => {
-				console.error('Error getting accounts', err)
-			})
-	}
-
+	/*
+  UseEffect 1:
+  - Serves as the entry point for the app
+  - Runs on page load, only runs again if rpcProvider changes (which it won't)
+  - Handles initial check for web3provider, will set accounts to state if user is already connected
+  - Handles user notifications if user is connected to the wrong shard
+  - Sets event listener to handle account changes
+  */
 	useEffect(() => {
-		console.log('Use Effect 1')
 		fetchAllNFTs(provider.rpcProvider)
 		if (window.ethereum.isPelagus) {
 			const web3Provider = new quais.providers.Web3Provider(window.ethereum)
@@ -91,12 +69,50 @@ function App() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [provider.rpcProvider])
 
+	/*
+  UseEffect 2:
+  - Secondary data handler
+  - Runs on page load, only runs again if allNFTs or user changes (new nft minted or user changes account)
+  - Handles filtering of allNFTs to userNFTss
+  */
+
 	useEffect(() => {
 		if (allNFTs && user && isCyprus2) {
 			setUserNFTs(filterNFTsByOwner(allNFTs, user.addr))
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [allNFTs, user])
+
+	// gets all NFTs and sets them to state
+	const fetchAllNFTs = async (provider) => {
+		await getAllNFTs(provider)
+			.then((NFTs) => {
+				setAllNFTs(NFTs.reverse())
+			})
+			.catch((err) => {
+				console.log('Error getting NFTs', err)
+			})
+	}
+
+	// checks for user accounts and sets them to state if the user is already connected
+	const fetchAccounts = async (provider) => {
+		await getAccounts(provider)
+			.then((account) => {
+				if (account !== undefined) {
+					if (account.shard === 'zone-0-1') {
+						setIsCyprus2(true)
+					} else {
+						setIsCyprus2(false)
+					}
+					setUser(account)
+				} else {
+					setUser()
+				}
+			})
+			.catch((err) => {
+				console.error('Error getting accounts', err)
+			})
+	}
 
 	return (
 		<div>

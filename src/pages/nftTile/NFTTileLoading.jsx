@@ -1,6 +1,7 @@
 import './nftTile.css'
 
 function NFTTileLoading() {
+  // Displays loading animation for NFTTile
 	return (
 		<div className='card-column'>
 			<div className='bids-card'>

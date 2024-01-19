@@ -9,12 +9,16 @@ import { pollFor } from 'quais-polling'
 import './item.css'
 
 const Item = ({ provider, user, fetchAllNFTs, isCyprus2 }) => {
-	const [loading, setLoading] = useState(false)
-	const [isUserOwner, setIsUserOwner] = useState(false)
+	const [loading, setLoading] = useState(false) // loading state for buy transaction
+	const [isUserOwner, setIsUserOwner] = useState(false) // state to check if user is owner of NFT, if true disables buy functionality
 	const location = useLocation()
 	const receivedData = location.state
 	const nftItem = receivedData.data
 
+	/*
+  On page load, check if user is owner of NFT, render different UI/buttons based on this
+  - Re-runs check if user, shard, or nftItem.seller changes
+  */
 	useEffect(() => {
 		if (user && isCyprus2) {
 			if (user.addr.toLowerCase() === nftItem.seller.toLowerCase()) {
@@ -23,6 +27,13 @@ const Item = ({ provider, user, fetchAllNFTs, isCyprus2 }) => {
 		}
 	}, [user, isCyprus2, nftItem.seller])
 
+	/*
+  Function to purchase NFT
+  - Calls buyNFT function from marketplace.js, passes selected NFT data
+  - If successful, polls for transaction receipt, if successful, fetches all NFTs again
+  - If unsuccessful, displays error message
+  - Handles loading state for animation
+  */
 	async function purchaseNFT() {
 		setLoading(true)
 		try {
@@ -67,7 +78,7 @@ const Item = ({ provider, user, fetchAllNFTs, isCyprus2 }) => {
 	}
 	return (
 		<div className='item section__padding'>
-			<div className='item-image'>
+			<div className='item-image-container'>
 				<img
 					src={nftItem.image}
 					alt='item'

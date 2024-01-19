@@ -66,6 +66,7 @@ const socialLinks = [
 	},
 ]
 
+// TODO: email button doesn't actually do anything at the moment, need to either remove or add functionality
 const Footer = () => {
 	return (
 		<div className='footer'>

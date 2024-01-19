@@ -5,7 +5,6 @@
 	align-items: center;
 	width: 100%;
 }
-
 .create-container {
 	border-radius: 20px;
 	padding: 2rem;
@@ -17,13 +16,6 @@
 	line-height: 42px;
 	margin-bottom: 40px;
 }
-.create-container .upload-file {
-	font-weight: 600;
-	font-size: 28px;
-	line-height: 42px;
-	margin-bottom: 20px;
-}
-
 .formGroup {
 	display: flex;
 	flex-direction: column;
@@ -46,11 +38,9 @@
 	line-height: 26px;
 	width: 100%;
 }
-
 .input-handler:disabled {
 	cursor: not-allowed;
 }
-
 .formGroup textarea {
 	background: #2d2e36;
 	border-radius: 10px;
@@ -123,6 +113,8 @@
 .custom-file-input:active::before {
 	background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
 }
+
+/* Media Queries */
 @media screen and (max-width: 550px) {
 	.create {
 		padding: 2rem 1.5rem !important;

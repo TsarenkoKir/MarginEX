@@ -2,6 +2,9 @@ import NFTTile from '../nftTile/NFTTile'
 import NFTTileLoading from '../nftTile/NFTTileLoading'
 
 const NFTs = ({ allNFTs }) => {
+	// Displays all NFTs
+	// Displays loading animation if allNFTs have not been fetched yet
+	// TODO: Load more button is not properly implemented, need to add pagination functionality to only display 50 NFTs at a time
 	return (
 		<div className='bids section__padding'>
 			<div className='bids-container'>

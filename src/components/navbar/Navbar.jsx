@@ -34,12 +34,12 @@ const Navbar = ({ user, setUser, provider, setIsCyprus2 }) => {
 	return (
 		<div className='navbar'>
 			<div className='navbar-links'>
-				<div className='navbar-links_logo'>
+				<div className='navbar-links-title'>
 					<Link to='/'>
 						<h2 className='nav-link'>MarginEX</h2>
 					</Link>
 				</div>
-				<div className='navbar-links_container'>
+				<div className='navbar-links-container'>
 					<Menu />
 				</div>
 			</div>
@@ -85,8 +85,8 @@ const Navbar = ({ user, setUser, provider, setIsCyprus2 }) => {
 					/>
 				)}
 				{toggleMenu && (
-					<div className='navbar-menu_container scale-up-center'>
-						<div className='navbar-menu_container-links-sign'>
+					<div className='navbar-menu-container scale-up-center'>
+						<div className='navbar-menu-container-links-sign'>
 							{user ? (
 								<>
 									<button
@@ -108,7 +108,7 @@ const Navbar = ({ user, setUser, provider, setIsCyprus2 }) => {
 								</>
 							)}
 						</div>
-						<div className='navbar-menu_container-links'>
+						<div className='navbar-menu-container-links'>
 							<Menu />
 						</div>
 					</div>
