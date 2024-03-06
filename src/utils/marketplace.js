@@ -35,14 +35,14 @@ export const buyNFT = async (provider, tokenId, price) => {
 			value: quais.utils.parseEther(price),
 			gasLimit: quais.utils.hexlify(150000),
 		})
-		.then((tx) => {
-			console.log('Transaction broadcasted')
-			res = { status: 'success', data: tx.hash }
+		.then(() => {
+			res = { status: 'success', data: 'Transaction Broadcasted' }
 		})
 		.catch((err) => {
 			console.log(err)
 			res = { status: 'error', data: err }
 		})
+
 	return res
 }
 
