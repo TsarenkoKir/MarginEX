@@ -1,0 +1,179 @@
+.item {
+	display: flex;
+	padding: 0 6rem;
+}
+.item-image-container {
+	display: flex;
+	border-right: 1px solid rgba(165, 165, 165, 0.1);
+	width: 50%;
+	justify-content: center;
+	align-items: center;
+}
+.item-image-container img {
+	border-radius: 40px;
+	padding: 25px;
+	max-height: 500px;
+}
+.item-content {
+	display: flex;
+	justify-content: flex-start;
+	align-items: flex-start;
+	flex-direction: column;
+	width: 50%;
+	padding: 30px 3rem;
+}
+.item-title {
+	color: #bdbdbd;
+}
+.link:hover {
+	color: var(--primary-color);
+}
+.item-content-title h1 {
+	font-weight: 600;
+	font-size: 28px;
+	line-height: 42px;
+	color: #ffffff;
+}
+.item-content-creator {
+	margin-top: 30px;
+}
+.item-content-creator div {
+	display: flex;
+	align-items: center;
+	margin-top: 10px;
+}
+.item-content-creator div:last-child p {
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 21px;
+	color: #ffffff;
+}
+.item-content-buy {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 15px;
+	border-top: 1px solid rgba(165, 165, 165, 0.1);
+	padding-top: 20px;
+	margin-top: 30px;
+	width: 100%;
+}
+.item-content-buy .primary-btn {
+	background: var(--primary-btn);
+	border-radius: 10px;
+	border: none;
+	padding: 0.75rem 3rem;
+	font-size: 14px;
+	line-height: 21px;
+	font-weight: 600;
+	color: #fff;
+	margin-right: 20px;
+}
+.item-content-buy .secondary-btn {
+	background: transparent;
+	border-radius: 10px;
+	border: 1px solid var(--primary-color);
+	padding: 0.7rem 3rem;
+	font-size: 14px;
+	line-height: 21px;
+	font-weight: 600;
+	color: var(--primary-color);
+}
+
+/* Media Queries */
+@media screen and (max-width: 1050px) {
+	.item-content {
+		padding: 0 2rem;
+	}
+}
+
+@media screen and (max-width: 850px) {
+	.item {
+		flex-direction: column;
+		padding: 2rem 1rem;
+	}
+	.item-image {
+		border-right: unset;
+		width: 100%;
+		justify-content: flex-start;
+	}
+	.item-content {
+		width: 100%;
+	}
+	.item-image img {
+		max-height: 350px;
+	}
+}
+
+@media screen and (max-width: 650px) {
+	.item-content h1 {
+		font-size: 28px;
+		line-height: 42px;
+	}
+	.item-content p {
+		font-size: 16px;
+		line-height: 24px;
+	}
+	input,
+	.item-content__input button {
+		font-size: 16px;
+		line-height: 24px;
+	}
+	.item-content-buy .primary-btn {
+		padding: 0.75rem 20px;
+	}
+	.item-content-buy .secondary-btn {
+		padding: 0.75rem 33px;
+	}
+}
+@media screen and (max-width: 490px) {
+	.item-content h1 {
+		font-size: 28px;
+		line-height: 42px;
+	}
+	.item-content p {
+		font-size: 14px;
+		line-height: 26px;
+	}
+	.item-content__input input,
+	.item-content__input button {
+		font-size: 12px;
+		line-height: 16px;
+	}
+	.item {
+		padding-inline: 1rem !important ;
+		padding-top: 1rem !important;
+	}
+	.item-content-buy .primary-btn {
+		margin-right: 10px;
+	}
+	.item-content-action {
+		top: 15%;
+	}
+	.item-content-action p {
+		margin-inline: 5px;
+	}
+}
+
+
+.modal {
+	position: fixed; /* Фиксированное позиционирование относительно окна браузера */
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный фон */
+	display: flex; /* Используется для центрирования содержимого модального окна */
+	align-items: center; /* Вертикальное центрирование */
+	justify-content: center; /* Горизонтальное центрирование */
+	z-index: 1000; /* Убедитесь, что модальное окно будет поверх других элементов */
+  }
+  
+  .modal-content {
+	background: #fff;
+	padding: 20px;
+	border-radius: 5px; /* Скругленные углы */
+	width: 500px; /* Или любая другая фиксированная ширина */
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Тень для объемности */
+  }
+  
