@@ -100,10 +100,11 @@ const Item = ({ provider, user, fetchAllNFTs, isCyprus1 }) => {
   async function handleResell() {
 	setLoading(true);
 	try {
-	  const salePrice = quais.utils.parseEther(resellPrice); // Преобразование цены в нужный формат
+		// Преобразование цены в нужный формат
+	  const price = quais.utils.parseUnits(resellPrice, 'ether')
 	  
 	  // Вызываем функцию для выставления NFT на продажу и получаем результат
-	  const listResponse = await listNFTForSale(provider.web3Provider, nftItem.tokenId, salePrice);
+	  const listResponse = await listNFTForSale(provider.web3Provider, nftItem.tokenId, price);
 	  
 	  console.log('Full response from listNFTForSale:', listResponse);
   
@@ -115,7 +116,7 @@ const Item = ({ provider, user, fetchAllNFTs, isCyprus1 }) => {
 		const receipt = await pollFor(provider.rpcProvider, 'getTransactionReceipt', [transactionHash], 1.5, 1);
 		console.log('Transaction receipt:', receipt);
   
-		if (receipt && receipt.logs.length !== 0) {
+		if (receipt) {
 		  toast(
 			<ToastMessage
 			  title='Listing Successful'
@@ -212,27 +213,32 @@ const Item = ({ provider, user, fetchAllNFTs, isCyprus1 }) => {
 					<p className='item-title'>Description</p>
 					{nftItem.description}
 				</div>
+				<div className='item-content-creator'>
+					<p className='item-title'>Availability</p>
+					{nftItem.onSale ? 'On sale' : 'Private' }
+				</div>
 				<div className='item-content-buy'>
       {!loading && (
         <>
           {isUserOwner ? (
             // If the user is the owner, show a "Sell" button
-<button
-  onClick={() => {
-    console.log('Нажата кнопка Sell');
-    setShowResellModal(true);
-  }}
-  className='primary-btn'
->
-  Sell
-</button>
+		<button
+		onClick={() => {
+			console.log('Нажата кнопка Sell');
+			setShowResellModal(true);
+		}}
+		className='primary-btn'
+		disabled={!isCyprus1 || !nftItem.onSale}
+		>
+		{nftItem.onSale ? 'Change price' : 'List for Sale'}
+		</button>
 
           ) : (
             // If the user is not the owner, show a "Buy" button
             <button
               onClick={() => purchaseNFT()}
               className='primary-btn'
-              disabled={!isCyprus1}
+              disabled={!isCyprus1 || !nftItem.onSale}
             >
               Buy
             </button>
