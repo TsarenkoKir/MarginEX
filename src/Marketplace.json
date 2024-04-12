@@ -1,5 +1,5 @@
 {
-	"address": "0x072af6E95aEE5Fbd35Fa53d41BAE9ea685f21BF0",
+	"address": "0x06d2133554aE1443B43B6d70A219EE6090b19982",
 	"abi": [
     {
       "inputs": [],
@@ -196,43 +196,6 @@
       "inputs": [
         {
           "indexed": true,
-          "internalType": "uint256",
-          "name": "tokenId",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "owner",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "seller",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "price",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "bool",
-          "name": "currentlyListed",
-          "type": "bool"
-        }
-      ],
-      "name": "TokenListedSuccess",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
           "internalType": "address",
           "name": "from",
           "type": "address"
@@ -301,6 +264,11 @@
           "internalType": "uint256",
           "name": "price",
           "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "onSale",
+          "type": "bool"
         }
       ],
       "name": "createToken",
@@ -311,6 +279,19 @@
           "type": "uint256"
         }
       ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "delistToken",
+      "outputs": [],
       "stateMutability": "payable",
       "type": "function"
     },
@@ -339,8 +320,8 @@
               "type": "uint256"
             },
             {
-              "internalType": "address payable",
-              "name": "owner",
+              "internalType": "address",
+              "name": "contractAddress",
               "type": "address"
             },
             {
@@ -355,7 +336,12 @@
             },
             {
               "internalType": "bool",
-              "name": "currentlyListed",
+              "name": "onSale",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "listed",
               "type": "bool"
             }
           ],
@@ -388,151 +374,12 @@
     },
     {
       "inputs": [],
-      "name": "getCurrentToken",
+      "name": "getListingPrice",
       "outputs": [
         {
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getLatestIdToListedToken",
-      "outputs": [
-        {
-          "components": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "address payable",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "internalType": "address payable",
-              "name": "seller",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "price",
-              "type": "uint256"
-            },
-            {
-              "internalType": "bool",
-              "name": "currentlyListed",
-              "type": "bool"
-            }
-          ],
-          "internalType": "struct NFTMarketplace.ListedToken",
-          "name": "",
-          "type": "tuple"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getListPrice",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "tokenId",
-          "type": "uint256"
-        }
-      ],
-      "name": "getListedTokenForId",
-      "outputs": [
-        {
-          "components": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "address payable",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "internalType": "address payable",
-              "name": "seller",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "price",
-              "type": "uint256"
-            },
-            {
-              "internalType": "bool",
-              "name": "currentlyListed",
-              "type": "bool"
-            }
-          ],
-          "internalType": "struct NFTMarketplace.ListedToken",
-          "name": "",
-          "type": "tuple"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getMyNFTs",
-      "outputs": [
-        {
-          "components": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "address payable",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "internalType": "address payable",
-              "name": "seller",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "price",
-              "type": "uint256"
-            },
-            {
-              "internalType": "bool",
-              "name": "currentlyListed",
-              "type": "bool"
-            }
-          ],
-          "internalType": "struct NFTMarketplace.ListedToken[]",
-          "name": "",
-          "type": "tuple[]"
         }
       ],
       "stateMutability": "view",
@@ -560,24 +407,6 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "tokenId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "price",
-          "type": "uint256"
-        }
-      ],
-      "name": "listNFTForSale",
-      "outputs": [],
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -759,13 +588,36 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_listPrice",
+          "name": "_listingPrice",
           "type": "uint256"
         }
       ],
-      "name": "updateListPrice",
+      "name": "updateListingPrice",
       "outputs": [],
-      "stateMutability": "payable",
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "price",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "onSale",
+          "type": "bool"
+        }
+      ],
+      "name": "updateToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     }
   ]
