@@ -222,16 +222,18 @@ const Item = ({ provider, user, fetchAllNFTs, isCyprus1 }) => {
         <>
           {isUserOwner ? (
             // If the user is the owner, show a "Sell" button
-		<button
-		onClick={() => {
-			console.log('Нажата кнопка Sell');
-			setShowResellModal(true);
-		}}
-		className='primary-btn'
-		disabled={!isCyprus1 || !nftItem.onSale}
-		>
-		{nftItem.onSale ? 'Change price' : 'List for Sale'}
-		</button>
+// Если пользователь является владельцем NFT, кнопка "List NFT for Sale" будет активна
+<button
+  onClick={() => {
+    console.log('Sell button clicked');
+    setShowResellModal(true); // Показываем модальное окно для установки цены
+  }}
+  className='primary-btn'
+  disabled={loading || !isUserOwner} // Кнопка деактивирована, если идет загрузка или пользователь не владелец
+>
+  {nftItem.onSale ? 'Change Price' : 'List for Sale'}
+</button>
+
 
           ) : (
             // If the user is not the owner, show a "Buy" button
