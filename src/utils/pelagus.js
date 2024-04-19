@@ -4,6 +4,10 @@ import { getShardFromAddress } from 'quais/lib/utils'
 // if user accepts, account is returned
 // if user denies, a 4001 error is printed to the console and nothing happens on the user side, undefined is returned
 export const requestAccounts = async (provider) => {
+	if (!provider) {
+		console.log('Provider is null');
+		return
+	}
 	let account
 	await provider
 		.send('quai_requestAccounts')
@@ -27,6 +31,10 @@ export const requestAccounts = async (provider) => {
 // if user is connected, account is returned
 // if user is not connected, undefined is returned
 export const getAccounts = async (provider) => {
+	if (!provider) {
+		console.log('provider is null');
+		return;
+	}
 	let account
 	await provider
 		.send('quai_accounts')

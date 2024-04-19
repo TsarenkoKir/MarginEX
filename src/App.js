@@ -34,7 +34,7 @@ function App() {
   */
 	useEffect(() => {
 		fetchAllNFTs(provider.rpcProvider)
-		if (window.ethereum.isPelagus) {
+		if (window.ethereum && window.ethereum.isPelagus) {
 			const web3Provider = new quais.providers.Web3Provider(window.ethereum)
 			setProvider({ ...provider, web3Provider: web3Provider })
 			fetchAccounts(web3Provider)

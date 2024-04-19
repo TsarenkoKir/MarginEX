@@ -18,7 +18,8 @@ const Item = ({ provider, user, fetchAllNFTs, isCyprus1 }) => {
 	const [showResellModal, setShowResellModal] = useState(false); // новое состояние для модального окна
 	const [resellPrice, setResellPrice] = useState(''); // новое состояние для цены перепродажи
 	const location = useLocation();
-	const nftItem = location.state.data;
+	const [nftItem, setNftItem] = useState(location.state.data);
+	
 
 	/*
   On page load, check if user is owner of NFT, render different UI/buttons based on this
@@ -98,62 +99,88 @@ const Item = ({ provider, user, fetchAllNFTs, isCyprus1 }) => {
 
   // Функция для перевыставления NFT на продажу
   async function handleResell() {
-	setLoading(true);
-	try {
-		// Преобразование цены в нужный формат
-	  const price = quais.utils.parseUnits(resellPrice, 'ether')
-	  
-	  // Вызываем функцию для выставления NFT на продажу и получаем результат
-	  const listResponse = await listNFTForSale(provider.web3Provider, nftItem.tokenId, price);
-	  
-	  console.log('Full response from listNFTForSale:', listResponse);
-  
-	  if (listResponse.status === 'success') {
-		const transactionHash = listResponse.data; // Предполагаем, что это хэш транзакции
-		console.log('Transaction hash:', transactionHash);
-  
-		// Передаем хэш транзакции для получения квитанции о транзакции
-		const receipt = await pollFor(provider.rpcProvider, 'getTransactionReceipt', [transactionHash], 1.5, 1);
-		console.log('Transaction receipt:', receipt);
-  
-		if (receipt) {
-		  toast(
-			<ToastMessage
-			  title='Listing Successful'
-			  link={{ href: createBlockExplorerUrl('transaction', receipt.transactionHash), text: 'View on Explorer' }}
-			/>,
-			toastConfig
-		  );
-		  fetchAllNFTs(provider.rpcProvider); // Обновляем список NFT
-		} else {
-		  toast(
-			<ToastMessage
-			  title='Listing Failed'
-			  text='Transaction reverted or logs are empty'
-			  link={{ href: createBlockExplorerUrl('transaction', receipt.transactionHash), text: 'View on Explorer' }}
-			/>,
-			toastConfig
-		  );
-		}
-	  } else {
-		// Обработка неудачных ответов от listNFTForSale
-		console.error('listNFTForSale response status was not success:', listResponse);
-		toast(
-		  <ToastMessage
-			title='Listing Failed'
-			text={listResponse.data.message || 'Unknown error'}
-		  />,
-		  toastConfig
-		);
-	  }
-	} catch (e) {
-	  console.error('Exception caught during listing:', e);
-	  alert(`Error during listing: ${e.message || e.toString()}`);
-	} finally {
-	  setLoading(false);
-	  setShowResellModal(false); // Закрываем модальное окно после попытки листинга
-	}
-  }
+    setLoading(true);
+
+	const formattedPrice = resellPrice.replace(',', '.');
+
+
+    // Validate the input price before proceeding
+    if (!formattedPrice || parseFloat(formattedPrice) <= 0) {
+        toast(
+            <ToastMessage
+                title='Invalid Price'
+                text='Please enter a positive value for the price.'
+            />,
+            toastConfig
+        );
+        setLoading(false);
+        return; // Stop the function if the price is invalid
+    }
+
+    try {
+        // Преобразование цены в нужный формат
+        const price = quais.utils.parseUnits(formattedPrice, 'ether');
+
+        // Determine if the NFT is already listed for sale
+        const isUpdatingPrice = nftItem.onSale;
+
+        // Вызываем функцию для выставления NFT на продажу и получаем результат
+        const listResponse = await listNFTForSale(provider.web3Provider, nftItem.tokenId, price);
+
+        console.log('Full response from listNFTForSale:', listResponse);
+
+        if (listResponse.status === 'success') {
+			
+            const transactionHash = listResponse.data; // Предполагаем, что это хэш транзакции
+            console.log('Transaction hash:', transactionHash);
+
+            // Передаем хэш транзакции для получения квитанции о транзакции
+            const receipt = await pollFor(provider.rpcProvider, 'getTransactionReceipt', [transactionHash], 1.5, 1);
+            console.log('Transaction receipt:', receipt);
+
+            if (receipt) {
+				setNftItem(prevNftItem => ({ ...prevNftItem, price: formattedPrice }));
+                toast(
+                    <ToastMessage
+                        title={isUpdatingPrice ? 'Price Update Successful' : 'Listing Successful'}
+                        text={isUpdatingPrice ? 'The selling price has been updated.' : 'Your NFT is now listed for sale.'}
+                        link={{ href: createBlockExplorerUrl('transaction', receipt.transactionHash), text: 'View on Explorer' }}
+                    />,
+                    toastConfig
+                );
+                fetchAllNFTs(provider.rpcProvider); // Обновляем список NFT
+            } else {
+                toast(
+                    <ToastMessage
+                        title='Listing Failed'
+                        text='Transaction reverted or logs are empty'
+                        link={{ href: createBlockExplorerUrl('transaction', receipt.transactionHash), text: 'View on Explorer' }}
+                    />,
+                    toastConfig
+                );
+            }
+        } else {
+            // Обработка неудачных ответов от listNFTForSale
+            console.error('listNFTForSale response status was not success:', listResponse);
+            toast(
+                <ToastMessage
+                    title='Listing Failed'
+                    text={listResponse.data.message || 'Unknown error'}
+                />,
+                toastConfig
+            );
+        }
+    } catch (e) {
+        console.error('Exception caught during listing:', e);
+        alert(`Error during listing: ${e.message || e.toString()}`);
+    } finally {
+        setLoading(false);
+        setShowResellModal(false); // Закрываем модальное окно после попытки листинга
+    }
+}
+
+
+
   
     // JSX для модального окна
 	const resellModal = showResellModal && (
@@ -162,7 +189,7 @@ const Item = ({ provider, user, fetchAllNFTs, isCyprus1 }) => {
 			<h2>Set a price to list your NFT</h2>
 			<input
 			  type='text'
-			  placeholder='Enter price in ETH'
+			  placeholder='Enter price in QUAI'
 			  value={resellPrice}
 			  onChange={(e) => setResellPrice(e.target.value)}
 			/>
