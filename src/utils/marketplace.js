@@ -3,7 +3,6 @@ import MarketplaceJSON from '../Marketplace.json'
 import { GetIpfsUrlFromPinata } from './helpers'
 import { quais } from 'quais'
 
-
 // hits the rpcProvider to get all NFTs, sort the data, and return it
 export const getAllNFTs = async (provider) => {
 	const contract = new quais.Contract(MarketplaceJSON.address, MarketplaceJSON.abi, provider)
@@ -50,7 +49,7 @@ export const buyNFT = async (provider, tokenId, price) => {
 
 	return res
 };
-  
+
   
 // hits the web3provider to prompt user to confirm listing of NFT, returns transaction status
 export const createNFT = async (provider, metadataURL, price) => {
